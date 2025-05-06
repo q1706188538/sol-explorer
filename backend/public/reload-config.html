@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOL链查询工具 - 配置页面</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        h2 {
+            color: #3498db;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .config-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .input-group textarea {
+            height: 100px;
+            font-family: monospace;
+        }
+        .checkbox-group {
+            margin-bottom: 15px;
+        }
+        .checkbox-group label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        .btn-success {
+            background-color: #2ecc71;
+        }
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .api-key-list {
+            margin-bottom: 15px;
+        }
+        .api-key-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .api-key-item input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .api-key-item button {
+            padding: 5px 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-api-key {
+            padding: 5px 10px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .rpc-url-list {
+            margin-bottom: 15px;
+        }
+        .rpc-url-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .rpc-url-item input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .rpc-url-item button {
+            padding: 5px 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-rpc-url {
+            padding: 5px 10px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .nav {
+            margin-bottom: 20px;
+        }
+        .nav a {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .nav a:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="/">返回主页</a>
+        </div>
+        
+        <h1>SOL链查询工具 - 配置页面</h1>
+        
+        <div id="message" class="message" style="display: none;"></div>
+        
+        <div class="config-section">
+            <h2>销毁验证配置</h2>
+            
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="burnVerificationEnabled">
+                    启用销毁验证功能
+                </label>
+            </div>
+            
+            <div class="input-group">
+                <label for="targetContractAddress">目标合约地址</label>
+                <input type="text" id="targetContractAddress" placeholder="输入目标合约地址">
+            </div>
+            
+            <div class="input-group">
+                <label for="targetAmount">目标销毁数量</label>
+                <input type="text" id="targetAmount" placeholder="输入目标销毁数量">
+            </div>
+            
+            <div class="input-group">
+                <label for="burnAddress">销毁地址</label>
+                <input type="text" id="burnAddress" placeholder="输入销毁地址">
+            </div>
+        </div>
+        
+        <div class="config-section">
+            <h2>SolScan API 配置</h2>
+            
+            <div class="input-group">
+                <label for="solScanApiUrl">API URL</label>
+                <input type="text" id="solScanApiUrl" placeholder="输入 SolScan API URL">
+            </div>
+            
+            <div class="input-group">
+                <label for="solScanMaxConcurrent">最大并发请求数</label>
+                <input type="number" id="solScanMaxConcurrent" placeholder="输入最大并发请求数">
+            </div>
+            
+            <label>API 密钥列表</label>
+            <div id="apiKeyList" class="api-key-list"></div>
+            
+            <button id="addApiKey" class="add-api-key">添加 API 密钥</button>
+        </div>
+        
+        <div class="config-section">
+            <h2>Solana 节点配置</h2>
+            
+            <label>RPC URL 列表</label>
+            <div id="rpcUrlList" class="rpc-url-list"></div>
+            
+            <button id="addRpcUrl" class="add-rpc-url">添加 RPC URL</button>
+        </div>
+        
+        <div class="config-section">
+            <h2>Moralis API 配置</h2>
+            
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="moralisEnabled">
+                    启用 Moralis API
+                </label>
+            </div>
+            
+            <div class="input-group">
+                <label for="moralisApiUrl">API URL</label>
+                <input type="text" id="moralisApiUrl" placeholder="输入 Moralis API URL">
+            </div>
+            
+            <div class="input-group">
+                <label for="moralisApiKey">API 密钥</label>
+                <input type="text" id="moralisApiKey" placeholder="输入 Moralis API 密钥">
+            </div>
+            
+            <div class="input-group">
+                <label for="moralisMaxConcurrent">最大并发请求数</label>
+                <input type="number" id="moralisMaxConcurrent" placeholder="输入最大并发请求数">
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button id="saveConfig" class="btn btn-success">保存配置</button>
+            <button id="reloadConfig" class="btn">重新加载配置</button>
+            <button id="resetConfig" class="btn btn-danger">重置配置</button>
+        </div>
+    </div>
+    
+    <script>
+        // API 基础URL
+        const API_BASE_URL = '/api';
+        
+        // 配置对象
+        let config = {
+            burnVerification: {
+                enabled: false,
+                targetContractAddress: '',
+                targetAmount: '',
+                burnAddress: ''
+            },
+            solScan: {
+                apiUrl: '',
+                apiKeys: [],
+                maxConcurrent: 100
+            },
+            solNode: {
+                rpcUrls: []
+            },
+            moralis: {
+                enabled: false,
+                apiUrl: '',
+                apiKey: '',
+                maxConcurrent: 20
+            }
+        };
+        
+        // DOM 元素
+        const elements = {
+            // 销毁验证配置
+            burnVerificationEnabled: document.getElementById('burnVerificationEnabled'),
+            targetContractAddress: document.getElementById('targetContractAddress'),
+            targetAmount: document.getElementById('targetAmount'),
+            burnAddress: document.getElementById('burnAddress'),
+            
+            // SolScan API 配置
+            solScanApiUrl: document.getElementById('solScanApiUrl'),
+            solScanMaxConcurrent: document.getElementById('solScanMaxConcurrent'),
+            apiKeyList: document.getElementById('apiKeyList'),
+            addApiKey: document.getElementById('addApiKey'),
+            
+            // Solana 节点配置
+            rpcUrlList: document.getElementById('rpcUrlList'),
+            addRpcUrl: document.getElementById('addRpcUrl'),
+            
+            // Moralis API 配置
+            moralisEnabled: document.getElementById('moralisEnabled'),
+            moralisApiUrl: document.getElementById('moralisApiUrl'),
+            moralisApiKey: document.getElementById('moralisApiKey'),
+            moralisMaxConcurrent: document.getElementById('moralisMaxConcurrent'),
+            
+            // 按钮
+            saveConfig: document.getElementById('saveConfig'),
+            reloadConfig: document.getElementById('reloadConfig'),
+            resetConfig: document.getElementById('resetConfig'),
+            
+            // 消息
+            message: document.getElementById('message')
+        };
+        
+        // 初始化页面
+        async function initPage() {
+            try {
+                // 加载配置
+                await loadConfig();
+                
+                // 设置事件监听器
+                setupEventListeners();
+                
+                console.log('页面初始化完成');
+            } catch (error) {
+                console.error('页面初始化失败:', error);
+                showMessage('页面初始化失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 加载配置
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/config`);
+                
+                if (!response.ok) {
+                    throw new Error(`加载配置失败: ${response.status} ${response.statusText}`);
+                }
+                
+                config = await response.json();
+                
+                // 更新UI
+                updateUI();
+                
+                console.log('配置加载完成:', config);
+            } catch (error) {
+                console.error('加载配置失败:', error);
+                showMessage('加载配置失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 更新UI
+        function updateUI() {
+            // 销毁验证配置
+            elements.burnVerificationEnabled.checked = config.burnVerification?.enabled || false;
+            elements.targetContractAddress.value = config.burnVerification?.targetContractAddress || '';
+            elements.targetAmount.value = config.burnVerification?.targetAmount || '';
+            elements.burnAddress.value = config.burnVerification?.burnAddress || '';
+            
+            // SolScan API 配置
+            elements.solScanApiUrl.value = config.solScan?.apiUrl || '';
+            elements.solScanMaxConcurrent.value = config.solScan?.maxConcurrent || 100;
+            
+            // 更新 API 密钥列表
+            updateApiKeyList();
+            
+            // 更新 RPC URL 列表
+            updateRpcUrlList();
+            
+            // Moralis API 配置
+            elements.moralisEnabled.checked = config.moralis?.enabled || false;
+            elements.moralisApiUrl.value = config.moralis?.apiUrl || '';
+            elements.moralisApiKey.value = config.moralis?.apiKey || '';
+            elements.moralisMaxConcurrent.value = config.moralis?.maxConcurrent || 20;
+        }
+        
+        // 更新 API 密钥列表
+        function updateApiKeyList() {
+            elements.apiKeyList.innerHTML = '';
+            
+            if (config.solScan?.apiKeys && Array.isArray(config.solScan.apiKeys)) {
+                config.solScan.apiKeys.forEach((apiKey, index) => {
+                    const apiKeyItem = document.createElement('div');
+                    apiKeyItem.className = 'api-key-item';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = apiKey;
+                    input.dataset.index = index;
+                    input.addEventListener('change', (e) => {
+                        config.solScan.apiKeys[index] = e.target.value;
+                    });
+                    
+                    const removeButton = document.createElement('button');
+                    removeButton.textContent = '删除';
+                    removeButton.addEventListener('click', () => {
+                        config.solScan.apiKeys.splice(index, 1);
+                        updateApiKeyList();
+                    });
+                    
+                    apiKeyItem.appendChild(input);
+                    apiKeyItem.appendChild(removeButton);
+                    
+                    elements.apiKeyList.appendChild(apiKeyItem);
+                });
+            }
+        }
+        
+        // 更新 RPC URL 列表
+        function updateRpcUrlList() {
+            elements.rpcUrlList.innerHTML = '';
+            
+            if (config.solNode?.rpcUrls && Array.isArray(config.solNode.rpcUrls)) {
+                config.solNode.rpcUrls.forEach((rpcUrl, index) => {
+                    const rpcUrlItem = document.createElement('div');
+                    rpcUrlItem.className = 'rpc-url-item';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = rpcUrl;
+                    input.dataset.index = index;
+                    input.addEventListener('change', (e) => {
+                        config.solNode.rpcUrls[index] = e.target.value;
+                    });
+                    
+                    const removeButton = document.createElement('button');
+                    removeButton.textContent = '删除';
+                    removeButton.addEventListener('click', () => {
+                        config.solNode.rpcUrls.splice(index, 1);
+                        updateRpcUrlList();
+                    });
+                    
+                    rpcUrlItem.appendChild(input);
+                    rpcUrlItem.appendChild(removeButton);
+                    
+                    elements.rpcUrlList.appendChild(rpcUrlItem);
+                });
+            }
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 销毁验证配置
+            elements.burnVerificationEnabled.addEventListener('change', (e) => {
+                config.burnVerification.enabled = e.target.checked;
+            });
+            
+            elements.targetContractAddress.addEventListener('change', (e) => {
+                config.burnVerification.targetContractAddress = e.target.value;
+            });
+            
+            elements.targetAmount.addEventListener('change', (e) => {
+                config.burnVerification.targetAmount = e.target.value;
+            });
+            
+            elements.burnAddress.addEventListener('change', (e) => {
+                config.burnVerification.burnAddress = e.target.value;
+            });
+            
+            // SolScan API 配置
+            elements.solScanApiUrl.addEventListener('change', (e) => {
+                config.solScan.apiUrl = e.target.value;
+            });
+            
+            elements.solScanMaxConcurrent.addEventListener('change', (e) => {
+                config.solScan.maxConcurrent = parseInt(e.target.value) || 100;
+            });
+            
+            elements.addApiKey.addEventListener('click', () => {
+                if (!config.solScan.apiKeys) {
+                    config.solScan.apiKeys = [];
+                }
+                
+                config.solScan.apiKeys.push('');
+                updateApiKeyList();
+            });
+            
+            // Solana 节点配置
+            elements.addRpcUrl.addEventListener('click', () => {
+                if (!config.solNode.rpcUrls) {
+                    config.solNode.rpcUrls = [];
+                }
+                
+                config.solNode.rpcUrls.push('');
+                updateRpcUrlList();
+            });
+            
+            // Moralis API 配置
+            elements.moralisEnabled.addEventListener('change', (e) => {
+                if (!config.moralis) {
+                    config.moralis = {
+                        enabled: false,
+                        apiUrl: '',
+                        apiKey: '',
+                        maxConcurrent: 20
+                    };
+                }
+                
+                config.moralis.enabled = e.target.checked;
+            });
+            
+            elements.moralisApiUrl.addEventListener('change', (e) => {
+                if (!config.moralis) {
+                    config.moralis = {
+                        enabled: false,
+                        apiUrl: '',
+                        apiKey: '',
+                        maxConcurrent: 20
+                    };
+                }
+                
+                config.moralis.apiUrl = e.target.value;
+            });
+            
+            elements.moralisApiKey.addEventListener('change', (e) => {
+                if (!config.moralis) {
+                    config.moralis = {
+                        enabled: false,
+                        apiUrl: '',
+                        apiKey: '',
+                        maxConcurrent: 20
+                    };
+                }
+                
+                config.moralis.apiKey = e.target.value;
+            });
+            
+            elements.moralisMaxConcurrent.addEventListener('change', (e) => {
+                if (!config.moralis) {
+                    config.moralis = {
+                        enabled: false,
+                        apiUrl: '',
+                        apiKey: '',
+                        maxConcurrent: 20
+                    };
+                }
+                
+                config.moralis.maxConcurrent = parseInt(e.target.value) || 20;
+            });
+            
+            // 按钮
+            elements.saveConfig.addEventListener('click', saveConfig);
+            elements.reloadConfig.addEventListener('click', loadConfig);
+            elements.resetConfig.addEventListener('click', resetConfig);
+        }
+        
+        // 保存配置
+        async function saveConfig() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/save-config`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(config)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`保存配置失败: ${response.status} ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('配置保存成功', 'success');
+                    
+                    // 更新配置
+                    config = result.config;
+                    
+                    // 更新UI
+                    updateUI();
+                } else {
+                    throw new Error(result.message || '保存配置失败');
+                }
+            } catch (error) {
+                console.error('保存配置失败:', error);
+                showMessage('保存配置失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 重置配置
+        function resetConfig() {
+            if (confirm('确定要重置配置吗？这将丢失所有更改。')) {
+                config = {
+                    burnVerification: {
+                        enabled: true,
+                        targetContractAddress: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                        targetAmount: '101',
+                        burnAddress: '1nc1nerator11111111111111111111111111111111'
+                    },
+                    solScan: {
+                        apiUrl: 'https://public-api.solscan.io',
+                        apiKeys: [
+                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE3MTU2MjA0NzU1NzQsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSIsImFjdGlvbiI6InRva2VuLWNyZWF0ZSIsImlhdCI6MTcxNTYyMDQ3NX0.Ij0BfaXMwwnMQvKdQFKPX9JH9AFwCfT5F9jLg5OMjSA'
+                        ],
+                        maxConcurrent: 100
+                    },
+                    solNode: {
+                        rpcUrls: [
+                            'https://api.mainnet-beta.solana.com',
+                            'https://solana-mainnet.g.alchemy.com/v2/demo',
+                            'https://rpc.ankr.com/solana'
+                        ]
+                    },
+                    moralis: {
+                        enabled: false,
+                        apiUrl: 'https://deep-index.moralis.io/api/v2.2',
+                        apiKey: '',
+                        maxConcurrent: 20
+                    }
+                };
+                
+                // 更新UI
+                updateUI();
+                
+                showMessage('配置已重置', 'success');
+            }
+        }
+        
+        // 显示消息
+        function showMessage(message, type) {
+            elements.message.textContent = message;
+            elements.message.className = `message ${type}`;
+            elements.message.style.display = 'block';
+            
+            // 自动隐藏
+            setTimeout(() => {
+                elements.message.style.display = 'none';
+            }, 5000);
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,975 @@
+/* SOL链查询工具样式表 */
+
+/* 基础样式 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Microsoft YaHei', Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f7fa;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+h2 {
+  color: #3498db;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+h4 {
+  color: #2c3e50;
+  margin: 15px 0 10px;
+}
+
+a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* 标签页 */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #7f8c8d;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.tab-btn:hover {
+  color: #3498db;
+}
+
+.tab-btn.active {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #3498db;
+}
+
+.tab-content {
+  display: none;
+  padding: 10px 0;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* 输入组 */
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.input-group input:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+/* 按钮 */
+.btn {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #2980b9;
+}
+
+.btn:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.btn-small {
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+.action-btn {
+  padding: 8px 15px;
+  background-color: #f1f1f1;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.action-btn:hover {
+  background-color: #e0e0e0;
+}
+
+/* 加载指示器 */
+.loading {
+  display: none;
+  margin: 10px 0;
+  color: #3498db;
+  font-style: italic;
+}
+
+/* 结果区域 */
+.results {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+/* 表格 */
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+tr:hover {
+  background-color: #f5f7fa;
+}
+
+.tx-in {
+  color: #27ae60;
+}
+
+.tx-out {
+  color: #e74c3c;
+}
+
+.tx-other {
+  color: #7f8c8d;
+}
+
+/* 分页 */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.pagination-info {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pagination-btn {
+  padding: 5px 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  margin: 0 2px;
+  border-radius: 3px;
+  transition: all 0.3s;
+}
+
+.pagination-btn:hover {
+  background-color: #e9ecef;
+}
+
+.pagination-btn:disabled {
+  background-color: #f8f9fa;
+  color: #adb5bd;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  margin: 0 10px;
+  color: #495057;
+}
+
+.page-size-selector {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.page-size-selector select {
+  margin: 0 5px;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+/* 查询容器 */
+.query-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.burn-verification, .query-section {
+  flex: 1;
+  min-width: 300px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+}
+
+.query-section {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.query-section.enabled {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.verification-note {
+  margin-bottom: 10px;
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+.verification-requirement {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f1f8ff;
+  border-left: 3px solid #3498db;
+  font-size: 14px;
+}
+
+.verification-requirement .address,
+.verification-requirement .amount,
+.verification-requirement .contract {
+  font-weight: bold;
+  color: #2c3e50;
+  word-break: break-all;
+}
+
+.verification-results-container {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+}
+
+.success-message {
+  padding: 10px;
+  background-color: #d4edda;
+  border-left: 3px solid #28a745;
+  color: #155724;
+}
+
+.warning-message {
+  padding: 10px;
+  background-color: #fff3cd;
+  border-left: 3px solid #ffc107;
+  color: #856404;
+}
+
+.error-message {
+  padding: 10px;
+  background-color: #f8d7da;
+  border-left: 3px solid #dc3545;
+  color: #721c24;
+}
+
+.hash, .address, .amount, .status {
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.status {
+  font-weight: bold;
+}
+
+/* 交易类型筛选 */
+.tx-type-tabs {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tx-type-btn {
+  padding: 8px 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #7f8c8d;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.tx-type-btn:hover {
+  color: #3498db;
+}
+
+.tx-type-btn.active {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.tx-type-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #3498db;
+}
+
+/* 代币筛选 */
+.token-filter {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.token-filter-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.token-filter-header span {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.token-filter-btn {
+  padding: 5px 10px;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  cursor: pointer;
+  color: #7f8c8d;
+  transition: all 0.3s;
+}
+
+.token-filter-btn:hover {
+  background-color: #f1f1f1;
+}
+
+.token-filter-btn.active {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.token-filter-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.token-filter-dropdown-btn {
+  padding: 5px 10px;
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.3s;
+}
+
+.token-filter-dropdown-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.token-filter-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  border-radius: 5px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.token-filter-dropdown:hover .token-filter-dropdown-content {
+  display: block;
+}
+
+.token-filter-item {
+  padding: 8px 12px;
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.token-filter-item:hover {
+  background-color: #f1f1f1;
+}
+
+.custom-token-filter {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.custom-token-filter input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.custom-token-filter button {
+  padding: 8px 15px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 合约提示 */
+.contract-hint {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: #e8f4fd;
+  border-left: 3px solid #3498db;
+  color: #2c3e50;
+}
+
+.goto-contract-list {
+  font-weight: bold;
+}
+
+/* 代币列表 */
+.token-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.token-list-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  display: flex;
+  gap: 5px;
+}
+
+.search-box input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-width: 200px;
+}
+
+.search-box button {
+  padding: 8px 15px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.contract-type-tabs {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.contract-type-btn {
+  padding: 8px 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #7f8c8d;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.contract-type-btn:hover {
+  color: #3498db;
+}
+
+.contract-type-btn.active {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.contract-type-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #3498db;
+}
+
+.token-list-empty {
+  text-align: center;
+  padding: 30px;
+  color: #7f8c8d;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.token-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.token-card {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.token-card:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.token-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.token-symbol {
+  font-weight: bold;
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.token-tx-count {
+  font-size: 12px;
+  color: #7f8c8d;
+  background-color: #f1f1f1;
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+.token-name {
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+.token-address {
+  font-family: monospace;
+  word-break: break-all;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #7f8c8d;
+  width: 100%;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
+/* 代币交易列表样式 */
+.token-transactions {
+  width: 100%;
+  margin-bottom: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 10px;
+  border: 1px solid #eee;
+}
+
+.token-tx-header {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 8px;
+  font-size: 14px;
+  text-align: left;
+}
+
+.token-tx-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.token-tx-item {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.token-tx-hash {
+  font-family: monospace;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.token-tx-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.token-tx-time {
+  color: #7f8c8d;
+}
+
+.token-tx-amount {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.token-tx-more {
+  text-align: center;
+  font-size: 12px;
+  color: #7f8c8d;
+  padding: 5px;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #eee;
+  margin-top: 5px;
+}
+
+.token-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.token-action-btn {
+  flex: 1;
+  padding: 10px 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 13px;
+  color: #2c3e50;
+  max-width: 140px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.token-action-btn:hover {
+  background-color: #e9ecef;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.token-action-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 合约信息 */
+.contract-details {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.info-group {
+  margin-bottom: 20px;
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.info-label {
+  width: 120px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.info-value {
+  flex: 1;
+  word-break: break-all;
+}
+
+/* 代币图标 */
+.token-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  height: 120px;
+  width: 120px;
+  border-radius: 60px;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  border: 1px solid #eee;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 代币列表中的图标容器 */
+.token-list-icon {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+  border-radius: 30px;
+}
+
+/* 代币符号占位符 */
+.token-symbol-placeholder {
+  font-size: 24px;
+  font-weight: bold;
+  color: #3498db;
+}
+
+.token-icon {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #3498db;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.icon-error {
+  color: #7f8c8d;
+  font-size: 14px;
+  text-align: center;
+}
+
+.holders-list {
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.holder-item {
+  display: flex;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.holder-item:last-child {
+  border-bottom: none;
+}
+
+.holder-address {
+  flex: 2;
+  font-family: monospace;
+}
+
+.holder-balance {
+  flex: 1;
+  text-align: right;
+}
+
+.holder-percentage {
+  width: 80px;
+  text-align: right;
+}
+
+/* 弹出消息 */
+.error-message-popup, .success-message-popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 5px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transform: translateX(120%);
+  transition: transform 0.3s ease-out;
+  max-width: 400px;
+}
+
+.error-message-popup {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-left: 5px solid #dc3545;
+}
+
+.success-message-popup {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 5px solid #28a745;
+}
+
+.error-message-popup.show, .success-message-popup.show {
+  transform: translateX(0);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .query-container {
+    flex-direction: column;
+  }
+
+  .burn-verification, .query-section {
+    width: 100%;
+  }
+
+  .pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pagination-controls {
+    margin-bottom: 15px;
+  }
+
+  .page-size-selector {
+    margin-left: 0;
+  }
+
+  .token-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .token-list-actions {
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .search-box input {
+    flex: 1;
+  }
+}
