@@ -350,12 +350,11 @@ router.post('/contract-info', async (req, res) => {
       // 检查会话状态
       console.log('会话状态:', req.session);
       if (!req.session.burnVerified) {
-        console.log('警告: 会话验证未通过，但暂时允许请求继续，用于调试');
-        // 暂时注释掉，允许请求继续
-        // return res.status(403).json({
-        //   success: false,
-        //   message: '请先验证代币销毁交易'
-        // });
+        console.log('会话验证未通过，拒绝请求');
+        return res.status(403).json({
+          success: false,
+          message: '请先验证代币销毁交易'
+        });
       }
     }
 
@@ -452,13 +451,25 @@ router.get('/config', (_, res) => {
       maxConcurrent: config.solScan.maxConcurrent
     },
     solNode: {
-      rpcUrls: config.solNode.rpcUrls
+      enabled: config.solNode?.enabled || false,
+      apiUrls: config.solNode?.apiUrls || [],
+      apiKeys: config.solNode?.apiKeys || [],
+      maxConcurrent: config.solNode?.maxConcurrent || 50,
+      priority: config.solNode?.priority || 4
     },
     burnVerification: {
       enabled: config.burnVerification.enabled,
-      targetContractAddress: config.burnVerification.targetContractAddress,
-      targetAmount: config.burnVerification.targetAmount,
-      burnAddress: config.burnVerification.burnAddress
+      type: config.burnVerification.type || 'sol',
+      sol: {
+        targetContractAddress: config.burnVerification.sol?.targetContractAddress || config.burnVerification.targetContractAddress || '',
+        targetAmount: config.burnVerification.sol?.targetAmount || config.burnVerification.targetAmount || '',
+        burnAddress: config.burnVerification.sol?.burnAddress || config.burnVerification.burnAddress || ''
+      },
+      bsc: {
+        targetContractAddress: config.burnVerification.bsc?.targetContractAddress || '',
+        targetAmount: config.burnVerification.bsc?.targetAmount || '',
+        burnAddress: config.burnVerification.bsc?.burnAddress || ''
+      }
     },
     pagination: config.pagination || {
       defaultPage: 1,
@@ -466,6 +477,22 @@ router.get('/config', (_, res) => {
       maxPageSize: 10000
     }
   };
+
+  // 添加BSC配置
+  if (config.bscScan) {
+    safeConfig.bscScan = {
+      apiUrl: config.bscScan.apiUrl,
+      apiKeys: config.bscScan.apiKeys,
+      maxConcurrent: config.bscScan.maxConcurrent
+    };
+  }
+
+  // 添加BSC节点配置
+  if (config.bscNode) {
+    safeConfig.bscNode = {
+      rpcUrls: config.bscNode.rpcUrls
+    };
+  }
 
   // 添加Moralis配置（如果存在）
   if (config.moralis) {
@@ -508,36 +535,71 @@ router.post('/reload-config', (_, res) => {
 
     console.log('配置已重新加载', config);
 
+    // 创建一个安全的配置对象，只包含前端需要的配置
+    const safeConfig = {
+      solScan: {
+        apiUrl: config.solScan.apiUrl,
+        apiKeys: config.solScan.apiKeys,
+        maxConcurrent: config.solScan.maxConcurrent
+      },
+      solNode: {
+        enabled: config.solNode?.enabled || false,
+        apiUrls: config.solNode?.apiUrls || [],
+        apiKeys: config.solNode?.apiKeys || [],
+        maxConcurrent: config.solNode?.maxConcurrent || 50,
+        priority: config.solNode?.priority || 4
+      },
+      burnVerification: {
+        enabled: config.burnVerification.enabled,
+        type: config.burnVerification.type || 'sol',
+        sol: {
+          targetContractAddress: config.burnVerification.sol?.targetContractAddress || config.burnVerification.targetContractAddress || '',
+          targetAmount: config.burnVerification.sol?.targetAmount || config.burnVerification.targetAmount || '',
+          burnAddress: config.burnVerification.sol?.burnAddress || config.burnVerification.burnAddress || ''
+        },
+        bsc: {
+          targetContractAddress: config.burnVerification.bsc?.targetContractAddress || '',
+          targetAmount: config.burnVerification.bsc?.targetAmount || '',
+          burnAddress: config.burnVerification.bsc?.burnAddress || ''
+        }
+      },
+      pagination: config.pagination || {
+        defaultPage: 1,
+        defaultPageSize: 5000,
+        maxPageSize: 10000
+      }
+    };
+
+    // 添加BSC配置
+    if (config.bscScan) {
+      safeConfig.bscScan = {
+        apiUrl: config.bscScan.apiUrl,
+        apiKeys: config.bscScan.apiKeys,
+        maxConcurrent: config.bscScan.maxConcurrent
+      };
+    }
+
+    // 添加BSC节点配置
+    if (config.bscNode) {
+      safeConfig.bscNode = {
+        rpcUrls: config.bscNode.rpcUrls
+      };
+    }
+
+    // 添加Moralis配置（如果存在）
+    if (config.moralis) {
+      safeConfig.moralis = {
+        apiUrl: config.moralis.apiUrl,
+        apiKey: config.moralis.apiKey,
+        maxConcurrent: config.moralis.maxConcurrent,
+        enabled: config.moralis.enabled !== false
+      };
+    }
+
     return res.json({
       success: true,
       message: '配置已重新加载',
-      config: {
-        solScan: {
-          apiUrl: config.solScan.apiUrl,
-          apiKeys: config.solScan.apiKeys,
-          maxConcurrent: config.solScan.maxConcurrent
-        },
-        solNode: {
-          rpcUrls: config.solNode.rpcUrls
-        },
-        burnVerification: {
-          enabled: config.burnVerification.enabled,
-          targetContractAddress: config.burnVerification.targetContractAddress,
-          targetAmount: config.burnVerification.targetAmount,
-          burnAddress: config.burnVerification.burnAddress
-        },
-        moralis: config.moralis ? {
-          apiUrl: config.moralis.apiUrl,
-          apiKey: config.moralis.apiKey,
-          maxConcurrent: config.moralis.maxConcurrent,
-          enabled: config.moralis.enabled !== false
-        } : undefined,
-        pagination: config.pagination || {
-          defaultPage: 1,
-          defaultPageSize: 5000,
-          maxPageSize: 10000
-        }
-      }
+      config: safeConfig
     });
   } catch (error) {
     console.error('重新加载配置失败:', error);
@@ -568,22 +630,72 @@ router.post('/save-config', (req, res) => {
     // 获取当前配置
     const currentConfig = { ...config };
 
-    // 更新配置
+    // 更新销毁验证配置
     if (newConfig.burnVerification) {
       if (newConfig.burnVerification.enabled !== undefined) {
         currentConfig.burnVerification.enabled = newConfig.burnVerification.enabled;
       }
+      if (newConfig.burnVerification.type !== undefined) {
+        currentConfig.burnVerification.type = newConfig.burnVerification.type;
+      }
+
+      // 更新SOL验证配置
+      if (newConfig.burnVerification.sol) {
+        if (!currentConfig.burnVerification.sol) {
+          currentConfig.burnVerification.sol = {};
+        }
+        if (newConfig.burnVerification.sol.targetContractAddress) {
+          currentConfig.burnVerification.sol.targetContractAddress = newConfig.burnVerification.sol.targetContractAddress;
+        }
+        if (newConfig.burnVerification.sol.targetAmount) {
+          currentConfig.burnVerification.sol.targetAmount = newConfig.burnVerification.sol.targetAmount;
+        }
+        if (newConfig.burnVerification.sol.burnAddress) {
+          currentConfig.burnVerification.sol.burnAddress = newConfig.burnVerification.sol.burnAddress;
+        }
+      }
+
+      // 更新BSC验证配置
+      if (newConfig.burnVerification.bsc) {
+        if (!currentConfig.burnVerification.bsc) {
+          currentConfig.burnVerification.bsc = {};
+        }
+        if (newConfig.burnVerification.bsc.targetContractAddress) {
+          currentConfig.burnVerification.bsc.targetContractAddress = newConfig.burnVerification.bsc.targetContractAddress;
+        }
+        if (newConfig.burnVerification.bsc.targetAmount) {
+          currentConfig.burnVerification.bsc.targetAmount = newConfig.burnVerification.bsc.targetAmount;
+        }
+        if (newConfig.burnVerification.bsc.burnAddress) {
+          currentConfig.burnVerification.bsc.burnAddress = newConfig.burnVerification.bsc.burnAddress;
+        }
+      }
+
+      // 兼容旧版配置
       if (newConfig.burnVerification.targetContractAddress) {
+        if (!currentConfig.burnVerification.sol) {
+          currentConfig.burnVerification.sol = {};
+        }
         currentConfig.burnVerification.targetContractAddress = newConfig.burnVerification.targetContractAddress;
+        currentConfig.burnVerification.sol.targetContractAddress = newConfig.burnVerification.targetContractAddress;
       }
       if (newConfig.burnVerification.targetAmount) {
+        if (!currentConfig.burnVerification.sol) {
+          currentConfig.burnVerification.sol = {};
+        }
         currentConfig.burnVerification.targetAmount = newConfig.burnVerification.targetAmount;
+        currentConfig.burnVerification.sol.targetAmount = newConfig.burnVerification.targetAmount;
       }
       if (newConfig.burnVerification.burnAddress) {
+        if (!currentConfig.burnVerification.sol) {
+          currentConfig.burnVerification.sol = {};
+        }
         currentConfig.burnVerification.burnAddress = newConfig.burnVerification.burnAddress;
+        currentConfig.burnVerification.sol.burnAddress = newConfig.burnVerification.burnAddress;
       }
     }
 
+    // 更新SolScan配置
     if (newConfig.solScan) {
       if (newConfig.solScan.apiUrl) {
         currentConfig.solScan.apiUrl = newConfig.solScan.apiUrl;
@@ -596,9 +708,42 @@ router.post('/save-config', (req, res) => {
       }
     }
 
+    // 更新Solana节点配置
     if (newConfig.solNode) {
       if (newConfig.solNode.rpcUrls && Array.isArray(newConfig.solNode.rpcUrls)) {
         currentConfig.solNode.rpcUrls = newConfig.solNode.rpcUrls;
+      }
+    }
+
+    // 更新BSCScan配置
+    if (newConfig.bscScan) {
+      if (!currentConfig.bscScan) {
+        currentConfig.bscScan = {
+          apiUrl: 'https://api.bscscan.com/api',
+          apiKeys: [],
+          maxConcurrent: 100
+        };
+      }
+      if (newConfig.bscScan.apiUrl) {
+        currentConfig.bscScan.apiUrl = newConfig.bscScan.apiUrl;
+      }
+      if (newConfig.bscScan.maxConcurrent !== undefined) {
+        currentConfig.bscScan.maxConcurrent = newConfig.bscScan.maxConcurrent;
+      }
+      if (newConfig.bscScan.apiKeys && Array.isArray(newConfig.bscScan.apiKeys)) {
+        currentConfig.bscScan.apiKeys = newConfig.bscScan.apiKeys;
+      }
+    }
+
+    // 更新BSC节点配置
+    if (newConfig.bscNode) {
+      if (!currentConfig.bscNode) {
+        currentConfig.bscNode = {
+          rpcUrls: []
+        };
+      }
+      if (newConfig.bscNode.rpcUrls && Array.isArray(newConfig.bscNode.rpcUrls)) {
+        currentConfig.bscNode.rpcUrls = newConfig.bscNode.rpcUrls;
       }
     }
 
@@ -631,7 +776,7 @@ router.post('/save-config', (req, res) => {
     if (newConfig.pagination) {
       if (!currentConfig.pagination) {
         currentConfig.pagination = {
-          defaultPage: 0,
+          defaultPage: 1,
           defaultPageSize: 5000,
           maxPageSize: 10000
         };
@@ -668,36 +813,71 @@ module.exports = ${JSON.stringify(currentConfig, null, 2).replace(/"([^"]+)":/g,
 
     console.log('配置已保存并重新加载:', config);
 
+    // 创建一个安全的配置对象，只包含前端需要的配置
+    const safeConfig = {
+      solScan: {
+        apiUrl: config.solScan.apiUrl,
+        apiKeys: config.solScan.apiKeys,
+        maxConcurrent: config.solScan.maxConcurrent
+      },
+      solNode: {
+        enabled: config.solNode?.enabled || false,
+        apiUrls: config.solNode?.apiUrls || [],
+        apiKeys: config.solNode?.apiKeys || [],
+        maxConcurrent: config.solNode?.maxConcurrent || 50,
+        priority: config.solNode?.priority || 4
+      },
+      burnVerification: {
+        enabled: config.burnVerification.enabled,
+        type: config.burnVerification.type || 'sol',
+        sol: {
+          targetContractAddress: config.burnVerification.sol?.targetContractAddress || config.burnVerification.targetContractAddress || '',
+          targetAmount: config.burnVerification.sol?.targetAmount || config.burnVerification.targetAmount || '',
+          burnAddress: config.burnVerification.sol?.burnAddress || config.burnVerification.burnAddress || ''
+        },
+        bsc: {
+          targetContractAddress: config.burnVerification.bsc?.targetContractAddress || '',
+          targetAmount: config.burnVerification.bsc?.targetAmount || '',
+          burnAddress: config.burnVerification.bsc?.burnAddress || ''
+        }
+      },
+      pagination: config.pagination || {
+        defaultPage: 1,
+        defaultPageSize: 5000,
+        maxPageSize: 10000
+      }
+    };
+
+    // 添加BSC配置
+    if (config.bscScan) {
+      safeConfig.bscScan = {
+        apiUrl: config.bscScan.apiUrl,
+        apiKeys: config.bscScan.apiKeys,
+        maxConcurrent: config.bscScan.maxConcurrent
+      };
+    }
+
+    // 添加BSC节点配置
+    if (config.bscNode) {
+      safeConfig.bscNode = {
+        rpcUrls: config.bscNode.rpcUrls
+      };
+    }
+
+    // 添加Moralis配置（如果存在）
+    if (config.moralis) {
+      safeConfig.moralis = {
+        apiUrl: config.moralis.apiUrl,
+        apiKey: config.moralis.apiKey,
+        maxConcurrent: config.moralis.maxConcurrent,
+        enabled: config.moralis.enabled !== false
+      };
+    }
+
     return res.json({
       success: true,
       message: '配置已保存并重新加载',
-      config: {
-        solScan: {
-          apiUrl: config.solScan.apiUrl,
-          apiKeys: config.solScan.apiKeys,
-          maxConcurrent: config.solScan.maxConcurrent
-        },
-        solNode: {
-          rpcUrls: config.solNode.rpcUrls
-        },
-        burnVerification: {
-          enabled: config.burnVerification.enabled,
-          targetContractAddress: config.burnVerification.targetContractAddress,
-          targetAmount: config.burnVerification.targetAmount,
-          burnAddress: config.burnVerification.burnAddress
-        },
-        moralis: config.moralis ? {
-          apiUrl: config.moralis.apiUrl,
-          apiKey: config.moralis.apiKey,
-          maxConcurrent: config.moralis.maxConcurrent,
-          enabled: config.moralis.enabled !== false
-        } : undefined,
-        pagination: config.pagination || {
-          defaultPage: 0,
-          defaultPageSize: 5000,
-          maxPageSize: 10000
-        }
-      }
+      config: safeConfig
     });
   } catch (error) {
     console.error('保存配置失败:', error);

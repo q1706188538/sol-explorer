@@ -310,11 +310,14 @@ tr:hover {
 .query-section {
   opacity: 0.7;
   pointer-events: none;
+  transition: all 0.3s ease;
 }
 
 .query-section.enabled {
   opacity: 1;
   pointer-events: auto;
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
 
 .verification-note {

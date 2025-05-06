@@ -76,7 +76,11 @@ const elements = {
   searchContract: document.getElementById('searchContract'),
   contractLoading: document.getElementById('contractLoading'),
   contractResults: document.getElementById('contractResults'),
-  contractInfo: document.getElementById('contractInfo')
+  contractInfo: document.getElementById('contractInfo'),
+
+  // 合约查询部分
+  contractQuerySection: document.getElementById('contractQuerySection'),
+  contractBurnRequirementText: document.getElementById('contractBurnRequirementText')
 };
 
 const state = {
@@ -133,12 +137,21 @@ async function loadConfig() {
 
     // 更新销毁验证要求文本
     if (config.burnVerification && config.burnVerification.enabled) {
-      const targetAmount = config.burnVerification.targetAmount;
-      const targetContract = config.burnVerification.targetContractAddress;
-      const burnAddress = config.burnVerification.burnAddress;
+      const verificationType = config.burnVerification.type || 'sol';
+      let targetAmount, targetContract, burnAddress;
+
+      if (verificationType === 'sol') {
+        targetAmount = config.burnVerification.sol.targetAmount;
+        targetContract = config.burnVerification.sol.targetContractAddress;
+        burnAddress = config.burnVerification.sol.burnAddress;
+      } else if (verificationType === 'bsc') {
+        targetAmount = config.burnVerification.bsc.targetAmount;
+        targetContract = config.burnVerification.bsc.targetContractAddress;
+        burnAddress = config.burnVerification.bsc.burnAddress;
+      }
 
       elements.burnRequirementText.innerHTML = `
-        验证要求: 向 <span class="address">${burnAddress}</span>
+        验证要求 (${verificationType.toUpperCase()}): 向 <span class="address">${burnAddress}</span>
         销毁 <span class="amount">${targetAmount}</span> 个
         <span class="contract">${targetContract}</span> 代币
       `;
@@ -157,8 +170,6 @@ async function loadConfig() {
       if (elements.pageSizeSelector) {
         elements.pageSizeSelector.value = state.transactions.pageSize;
       }
-
-
     }
 
   } catch (error) {
@@ -194,7 +205,7 @@ function updateVerificationUI() {
     elements.verificationResultsContainer.style.display = 'block';
     elements.burnInfo.innerHTML = `
       <div class="success-message">
-        <p>✅ 验证成功! 您可以查询转账记录了。</p>
+        <p>✅ 验证成功! 您可以查询转账记录和合约信息了。</p>
         <p>交易哈希: <span class="hash">${state.verification.txHash}</span></p>
         <p>发送地址: <span class="address">${state.verification.from}</span></p>
       </div>
@@ -204,6 +215,20 @@ function updateVerificationUI() {
     elements.txQuerySection.classList.add('enabled');
     elements.address.disabled = false;
     elements.searchTx.disabled = false;
+
+    // 启用合约查询部分
+    if (elements.contractQuerySection) {
+      elements.contractQuerySection.classList.add('enabled');
+      elements.contractAddress.disabled = false;
+      elements.searchContract.disabled = false;
+    }
+
+    // 更新合约查询部分的验证要求文本
+    if (elements.contractBurnRequirementText) {
+      elements.contractBurnRequirementText.innerHTML = `
+        <span class="success-message">✅ 验证已通过，您可以查询合约信息</span>
+      `;
+    }
   } else if (state.verification.verified && state.verification.isUsed) {
     // 验证通过但已使用
     elements.verificationResultsContainer.style.display = 'block';
@@ -218,20 +243,76 @@ function updateVerificationUI() {
     elements.txQuerySection.classList.remove('enabled');
     elements.address.disabled = true;
     elements.searchTx.disabled = true;
+
+    // 禁用合约查询部分
+    if (elements.contractQuerySection) {
+      elements.contractQuerySection.classList.remove('enabled');
+      elements.contractAddress.disabled = true;
+      elements.searchContract.disabled = true;
+    }
+
+    // 更新合约查询部分的验证要求文本
+    if (elements.contractBurnRequirementText) {
+      elements.contractBurnRequirementText.innerHTML = `
+        <span class="warning-message">⚠️ 该交易哈希已被使用，请提供新的交易哈希</span>
+      `;
+    }
   } else {
     // 未验证
     elements.verificationResultsContainer.style.display = 'none';
 
-    // 禁用查询部分
+    // 检查是否启用了销毁验证功能
     if (state.config && state.config.burnVerification && state.config.burnVerification.enabled) {
+      // 禁用查询部分
       elements.txQuerySection.classList.remove('enabled');
       elements.address.disabled = true;
       elements.searchTx.disabled = true;
+
+      // 禁用合约查询部分
+      if (elements.contractQuerySection) {
+        elements.contractQuerySection.classList.remove('enabled');
+        elements.contractAddress.disabled = true;
+        elements.searchContract.disabled = true;
+      }
+
+      // 更新合约查询部分的验证要求文本
+      if (elements.contractBurnRequirementText) {
+        const verificationType = state.config.burnVerification.type || 'sol';
+        let targetAmount, targetContract, burnAddress;
+
+        if (verificationType === 'sol') {
+          targetAmount = state.config.burnVerification.sol.targetAmount;
+          targetContract = state.config.burnVerification.sol.targetContractAddress;
+          burnAddress = state.config.burnVerification.sol.burnAddress;
+        } else if (verificationType === 'bsc') {
+          targetAmount = state.config.burnVerification.bsc.targetAmount;
+          targetContract = state.config.burnVerification.bsc.targetContractAddress;
+          burnAddress = state.config.burnVerification.bsc.burnAddress;
+        }
+
+        elements.contractBurnRequirementText.innerHTML = `
+          验证要求 (${verificationType.toUpperCase()}): 向 <span class="address">${burnAddress}</span>
+          销毁 <span class="amount">${targetAmount}</span> 个
+          <span class="contract">${targetContract}</span> 代币
+        `;
+      }
     } else {
       // 如果验证功能未启用，则启用查询部分
       elements.txQuerySection.classList.add('enabled');
       elements.address.disabled = false;
       elements.searchTx.disabled = false;
+
+      // 启用合约查询部分
+      if (elements.contractQuerySection) {
+        elements.contractQuerySection.classList.add('enabled');
+        elements.contractAddress.disabled = false;
+        elements.searchContract.disabled = false;
+      }
+
+      // 更新合约查询部分的验证要求文本
+      if (elements.contractBurnRequirementText) {
+        elements.contractBurnRequirementText.textContent = '销毁验证功能未启用，可以直接查询';
+      }
     }
   }
 }
@@ -349,6 +430,10 @@ async function verifyBurn() {
     elements.burnLoading.style.display = 'block';
     elements.checkBurnTx.disabled = true;
 
+    // 获取验证类型
+    const verificationType = state.config?.burnVerification?.type || 'sol';
+    console.log(`使用验证类型: ${verificationType}`);
+
     // 发送验证请求
     const result = await api.verifyBurn(txHash);
 
@@ -362,7 +447,7 @@ async function verifyBurn() {
 
       if (burnResult.isValidBurn) {
         // 验证成功
-        showSuccess('验证成功！您可以查询转账记录了。');
+        showSuccess(`验证成功！您可以查询转账记录了。(${verificationType.toUpperCase()})`);
 
         // 更新验证状态
         await checkVerificationStatus();
@@ -384,7 +469,7 @@ async function verifyBurn() {
         elements.verificationResultsContainer.style.display = 'block';
         elements.burnInfo.innerHTML = `
           <div class="error-message">
-            <p>❌ ${errorMessage}</p>
+            <p>❌ ${errorMessage} (${verificationType.toUpperCase()})</p>
             <p>交易哈希: <span class="hash">${txHash}</span></p>
             <p>发送地址: <span class="address">${burnResult.from}</span></p>
             <p>代币地址: <span class="address">${burnResult.token?.address || 'Unknown'}</span></p>
@@ -395,7 +480,7 @@ async function verifyBurn() {
         `;
       } else {
         // 未找到销毁事件
-        showError('未找到销毁事件，请确认交易哈希是否正确');
+        showError(`未找到销毁事件，请确认${verificationType.toUpperCase()}交易哈希是否正确`);
 
         // 隐藏详细信息
         elements.verificationResultsContainer.style.display = 'none';
@@ -1099,6 +1184,15 @@ async function searchContract() {
   if (!address) {
     showError('请输入合约地址');
     return;
+  }
+
+  // 检查是否启用了销毁验证功能
+  if (state.config && state.config.burnVerification && state.config.burnVerification.enabled) {
+    // 检查是否已验证销毁
+    if (!state.verification.verified || state.verification.isUsed) {
+      showError('请先验证代币销毁交易');
+      return;
+    }
   }
 
   try {

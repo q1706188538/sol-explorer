@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SOL链查询工具 - 配置页面</title>
+    <!-- 引入本地的ethers.min.js -->
+    <script src="/ethers.min.js"></script>
     <style>
         body {
             font-family: 'Microsoft YaHei', Arial, sans-serif;
@@ -195,109 +197,174 @@
         <div class="nav">
             <a href="/">返回主页</a>
         </div>
-        
+
         <h1>SOL链查询工具 - 配置页面</h1>
-        
+
         <div id="message" class="message" style="display: none;"></div>
-        
+
         <div class="config-section">
             <h2>销毁验证配置</h2>
-            
+
             <div class="checkbox-group">
                 <label>
                     <input type="checkbox" id="burnVerificationEnabled">
                     启用销毁验证功能
                 </label>
             </div>
-            
+
             <div class="input-group">
-                <label for="targetContractAddress">目标合约地址</label>
-                <input type="text" id="targetContractAddress" placeholder="输入目标合约地址">
+                <label for="verificationType">验证类型</label>
+                <select id="verificationType">
+                    <option value="sol">Solana (SOL)</option>
+                    <option value="bsc">Binance Smart Chain (BSC)</option>
+                </select>
             </div>
-            
-            <div class="input-group">
-                <label for="targetAmount">目标销毁数量</label>
-                <input type="text" id="targetAmount" placeholder="输入目标销毁数量">
+
+            <div id="solVerificationConfig">
+                <h3>Solana 验证配置</h3>
+                <div class="input-group">
+                    <label for="solTargetContractAddress">SOL 目标合约地址</label>
+                    <input type="text" id="solTargetContractAddress" placeholder="输入 SOL 目标合约地址">
+                </div>
+
+                <div class="input-group">
+                    <label for="solTargetAmount">SOL 目标销毁数量</label>
+                    <input type="text" id="solTargetAmount" placeholder="输入 SOL 目标销毁数量">
+                </div>
+
+                <div class="input-group">
+                    <label for="solBurnAddress">SOL 销毁地址</label>
+                    <input type="text" id="solBurnAddress" placeholder="输入 SOL 销毁地址">
+                </div>
             </div>
-            
-            <div class="input-group">
-                <label for="burnAddress">销毁地址</label>
-                <input type="text" id="burnAddress" placeholder="输入销毁地址">
+
+            <div id="bscVerificationConfig">
+                <h3>BSC 验证配置</h3>
+                <div class="input-group">
+                    <label for="bscTargetContractAddress">BSC 目标合约地址</label>
+                    <input type="text" id="bscTargetContractAddress" placeholder="输入 BSC 目标合约地址">
+                </div>
+
+                <div class="input-group">
+                    <label for="bscTargetAmount">BSC 目标销毁数量</label>
+                    <input type="text" id="bscTargetAmount" placeholder="输入 BSC 目标销毁数量">
+                </div>
+
+                <div class="input-group">
+                    <label for="bscBurnAddress">BSC 销毁地址</label>
+                    <input type="text" id="bscBurnAddress" placeholder="输入 BSC 销毁地址">
+                </div>
             </div>
         </div>
-        
+
         <div class="config-section">
             <h2>SolScan API 配置</h2>
-            
+
             <div class="input-group">
                 <label for="solScanApiUrl">API URL</label>
                 <input type="text" id="solScanApiUrl" placeholder="输入 SolScan API URL">
             </div>
-            
+
             <div class="input-group">
                 <label for="solScanMaxConcurrent">最大并发请求数</label>
                 <input type="number" id="solScanMaxConcurrent" placeholder="输入最大并发请求数">
             </div>
-            
+
             <label>API 密钥列表</label>
             <div id="apiKeyList" class="api-key-list"></div>
-            
+
             <button id="addApiKey" class="add-api-key">添加 API 密钥</button>
         </div>
-        
+
         <div class="config-section">
             <h2>Solana 节点配置</h2>
-            
+
             <label>RPC URL 列表</label>
             <div id="rpcUrlList" class="rpc-url-list"></div>
-            
+
             <button id="addRpcUrl" class="add-rpc-url">添加 RPC URL</button>
         </div>
-        
+
+        <div class="config-section">
+            <h2>BSCScan API 配置</h2>
+
+            <div class="input-group">
+                <label for="bscScanApiUrl">API URL</label>
+                <input type="text" id="bscScanApiUrl" placeholder="输入 BSCScan API URL">
+            </div>
+
+            <div class="input-group">
+                <label for="bscScanMaxConcurrent">最大并发请求数</label>
+                <input type="number" id="bscScanMaxConcurrent" placeholder="输入最大并发请求数">
+            </div>
+
+            <label>API 密钥列表</label>
+            <div id="bscApiKeyList" class="api-key-list"></div>
+
+            <button id="addBscApiKey" class="add-api-key">添加 BSC API 密钥</button>
+        </div>
+
+        <div class="config-section">
+            <h2>BSC 节点配置</h2>
+
+            <label>RPC URL 列表</label>
+            <div id="bscRpcUrlList" class="rpc-url-list"></div>
+
+            <button id="addBscRpcUrl" class="add-rpc-url">添加 BSC RPC URL</button>
+        </div>
+
         <div class="config-section">
             <h2>Moralis API 配置</h2>
-            
+
             <div class="checkbox-group">
                 <label>
                     <input type="checkbox" id="moralisEnabled">
                     启用 Moralis API
                 </label>
             </div>
-            
+
             <div class="input-group">
                 <label for="moralisApiUrl">API URL</label>
                 <input type="text" id="moralisApiUrl" placeholder="输入 Moralis API URL">
             </div>
-            
+
             <div class="input-group">
                 <label for="moralisApiKey">API 密钥</label>
                 <input type="text" id="moralisApiKey" placeholder="输入 Moralis API 密钥">
             </div>
-            
+
             <div class="input-group">
                 <label for="moralisMaxConcurrent">最大并发请求数</label>
                 <input type="number" id="moralisMaxConcurrent" placeholder="输入最大并发请求数">
             </div>
         </div>
-        
+
         <div class="btn-group">
             <button id="saveConfig" class="btn btn-success">保存配置</button>
             <button id="reloadConfig" class="btn">重新加载配置</button>
             <button id="resetConfig" class="btn btn-danger">重置配置</button>
         </div>
     </div>
-    
+
     <script>
         // API 基础URL
         const API_BASE_URL = '/api';
-        
+
         // 配置对象
         let config = {
             burnVerification: {
                 enabled: false,
-                targetContractAddress: '',
-                targetAmount: '',
-                burnAddress: ''
+                type: 'sol',
+                sol: {
+                    targetContractAddress: '',
+                    targetAmount: '',
+                    burnAddress: ''
+                },
+                bsc: {
+                    targetContractAddress: '',
+                    targetAmount: '',
+                    burnAddress: ''
+                }
             },
             solScan: {
                 apiUrl: '',
@@ -307,6 +374,14 @@
             solNode: {
                 rpcUrls: []
             },
+            bscScan: {
+                apiUrl: '',
+                apiKeys: [],
+                maxConcurrent: 100
+            },
+            bscNode: {
+                rpcUrls: []
+            },
             moralis: {
                 enabled: false,
                 apiUrl: '',
@@ -314,111 +389,262 @@
                 maxConcurrent: 20
             }
         };
-        
+
         // DOM 元素
         const elements = {
             // 销毁验证配置
             burnVerificationEnabled: document.getElementById('burnVerificationEnabled'),
-            targetContractAddress: document.getElementById('targetContractAddress'),
-            targetAmount: document.getElementById('targetAmount'),
-            burnAddress: document.getElementById('burnAddress'),
-            
+            verificationType: document.getElementById('verificationType'),
+            solVerificationConfig: document.getElementById('solVerificationConfig'),
+            bscVerificationConfig: document.getElementById('bscVerificationConfig'),
+
+            // SOL 验证配置
+            solTargetContractAddress: document.getElementById('solTargetContractAddress'),
+            solTargetAmount: document.getElementById('solTargetAmount'),
+            solBurnAddress: document.getElementById('solBurnAddress'),
+
+            // BSC 验证配置
+            bscTargetContractAddress: document.getElementById('bscTargetContractAddress'),
+            bscTargetAmount: document.getElementById('bscTargetAmount'),
+            bscBurnAddress: document.getElementById('bscBurnAddress'),
+
             // SolScan API 配置
             solScanApiUrl: document.getElementById('solScanApiUrl'),
             solScanMaxConcurrent: document.getElementById('solScanMaxConcurrent'),
             apiKeyList: document.getElementById('apiKeyList'),
             addApiKey: document.getElementById('addApiKey'),
-            
+
             // Solana 节点配置
             rpcUrlList: document.getElementById('rpcUrlList'),
             addRpcUrl: document.getElementById('addRpcUrl'),
-            
+
+            // BSCScan API 配置
+            bscScanApiUrl: document.getElementById('bscScanApiUrl'),
+            bscScanMaxConcurrent: document.getElementById('bscScanMaxConcurrent'),
+            bscApiKeyList: document.getElementById('bscApiKeyList'),
+            addBscApiKey: document.getElementById('addBscApiKey'),
+
+            // BSC 节点配置
+            bscRpcUrlList: document.getElementById('bscRpcUrlList'),
+            addBscRpcUrl: document.getElementById('addBscRpcUrl'),
+
             // Moralis API 配置
             moralisEnabled: document.getElementById('moralisEnabled'),
             moralisApiUrl: document.getElementById('moralisApiUrl'),
             moralisApiKey: document.getElementById('moralisApiKey'),
             moralisMaxConcurrent: document.getElementById('moralisMaxConcurrent'),
-            
+
             // 按钮
             saveConfig: document.getElementById('saveConfig'),
             reloadConfig: document.getElementById('reloadConfig'),
             resetConfig: document.getElementById('resetConfig'),
-            
+
             // 消息
             message: document.getElementById('message')
         };
-        
+
         // 初始化页面
         async function initPage() {
             try {
                 // 加载配置
                 await loadConfig();
-                
+
                 // 设置事件监听器
                 setupEventListeners();
-                
+
                 console.log('页面初始化完成');
             } catch (error) {
                 console.error('页面初始化失败:', error);
                 showMessage('页面初始化失败: ' + error.message, 'error');
             }
         }
-        
+
         // 加载配置
         async function loadConfig() {
             try {
+                console.log('开始加载配置...');
                 const response = await fetch(`${API_BASE_URL}/config`);
-                
+
                 if (!response.ok) {
                     throw new Error(`加载配置失败: ${response.status} ${response.statusText}`);
                 }
-                
-                config = await response.json();
-                
+
+                const data = await response.json();
+                console.log('从服务器接收到的原始配置数据:', data);
+
+                // 确保配置对象具有所有必要的属性
+                config = {
+                    burnVerification: {
+                        enabled: data.burnVerification?.enabled || false,
+                        type: data.burnVerification?.type || 'sol',
+                        sol: {
+                            targetContractAddress: data.burnVerification?.sol?.targetContractAddress || '',
+                            targetAmount: data.burnVerification?.sol?.targetAmount || '',
+                            burnAddress: data.burnVerification?.sol?.burnAddress || ''
+                        },
+                        bsc: {
+                            targetContractAddress: data.burnVerification?.bsc?.targetContractAddress || '',
+                            targetAmount: data.burnVerification?.bsc?.targetAmount || '',
+                            burnAddress: data.burnVerification?.bsc?.burnAddress || ''
+                        }
+                    },
+                    solScan: {
+                        apiUrl: data.solScan?.apiUrl || '',
+                        apiKeys: Array.isArray(data.solScan?.apiKeys) ? data.solScan.apiKeys : [],
+                        maxConcurrent: data.solScan?.maxConcurrent || 100
+                    },
+                    solNode: {
+                        enabled: data.solNode?.enabled || true,
+                        apiUrls: Array.isArray(data.solNode?.apiUrls) ? data.solNode.apiUrls : [],
+                        apiKeys: Array.isArray(data.solNode?.apiKeys) ? data.solNode.apiKeys : [],
+                        maxConcurrent: data.solNode?.maxConcurrent || 50,
+                        priority: data.solNode?.priority || 4
+                    },
+                    bscScan: {
+                        apiUrl: data.bscScan?.apiUrl || '',
+                        apiKeys: Array.isArray(data.bscScan?.apiKeys) ? data.bscScan.apiKeys : [],
+                        maxConcurrent: data.bscScan?.maxConcurrent || 100
+                    },
+                    bscNode: {
+                        rpcUrls: Array.isArray(data.bscNode?.rpcUrls) ? data.bscNode.rpcUrls : []
+                    },
+                    moralis: {
+                        enabled: data.moralis?.enabled || false,
+                        apiUrl: data.moralis?.apiUrl || '',
+                        apiKey: data.moralis?.apiKey || '',
+                        maxConcurrent: data.moralis?.maxConcurrent || 20
+                    }
+                };
+
+                console.log('处理后的配置数据:', config);
+
                 // 更新UI
                 updateUI();
-                
-                console.log('配置加载完成:', config);
+
+                console.log('配置加载完成');
             } catch (error) {
                 console.error('加载配置失败:', error);
                 showMessage('加载配置失败: ' + error.message, 'error');
+
+                // 初始化默认配置
+                config = {
+                    burnVerification: {
+                        enabled: false,
+                        type: 'sol',
+                        sol: {
+                            targetContractAddress: '',
+                            targetAmount: '',
+                            burnAddress: ''
+                        },
+                        bsc: {
+                            targetContractAddress: '',
+                            targetAmount: '',
+                            burnAddress: ''
+                        }
+                    },
+                    solScan: {
+                        apiUrl: '',
+                        apiKeys: [],
+                        maxConcurrent: 100
+                    },
+                    solNode: {
+                        enabled: true,
+                        apiUrls: [],
+                        apiKeys: [],
+                        maxConcurrent: 50,
+                        priority: 4
+                    },
+                    bscScan: {
+                        apiUrl: '',
+                        apiKeys: [],
+                        maxConcurrent: 100
+                    },
+                    bscNode: {
+                        rpcUrls: []
+                    },
+                    moralis: {
+                        enabled: false,
+                        apiUrl: '',
+                        apiKey: '',
+                        maxConcurrent: 20
+                    }
+                };
+
+                // 更新UI
+                updateUI();
             }
         }
-        
+
         // 更新UI
         function updateUI() {
             // 销毁验证配置
             elements.burnVerificationEnabled.checked = config.burnVerification?.enabled || false;
-            elements.targetContractAddress.value = config.burnVerification?.targetContractAddress || '';
-            elements.targetAmount.value = config.burnVerification?.targetAmount || '';
-            elements.burnAddress.value = config.burnVerification?.burnAddress || '';
-            
+            elements.verificationType.value = config.burnVerification?.type || 'sol';
+
+            // 根据验证类型显示/隐藏相应配置
+            updateVerificationTypeUI();
+
+            // SOL 验证配置
+            elements.solTargetContractAddress.value = config.burnVerification?.sol?.targetContractAddress || '';
+            elements.solTargetAmount.value = config.burnVerification?.sol?.targetAmount || '';
+            elements.solBurnAddress.value = config.burnVerification?.sol?.burnAddress || '';
+
+            // BSC 验证配置
+            elements.bscTargetContractAddress.value = config.burnVerification?.bsc?.targetContractAddress || '';
+            elements.bscTargetAmount.value = config.burnVerification?.bsc?.targetAmount || '';
+            elements.bscBurnAddress.value = config.burnVerification?.bsc?.burnAddress || '';
+
             // SolScan API 配置
             elements.solScanApiUrl.value = config.solScan?.apiUrl || '';
             elements.solScanMaxConcurrent.value = config.solScan?.maxConcurrent || 100;
-            
-            // 更新 API 密钥列表
+
+            // 更新 SOL API 密钥列表
             updateApiKeyList();
-            
-            // 更新 RPC URL 列表
+
+            // 更新 SOL RPC URL 列表
             updateRpcUrlList();
-            
+
+            // BSCScan API 配置
+            elements.bscScanApiUrl.value = config.bscScan?.apiUrl || '';
+            elements.bscScanMaxConcurrent.value = config.bscScan?.maxConcurrent || 100;
+
+            // 更新 BSC API 密钥列表
+            updateBscApiKeyList();
+
+            // 更新 BSC RPC URL 列表
+            updateBscRpcUrlList();
+
             // Moralis API 配置
             elements.moralisEnabled.checked = config.moralis?.enabled || false;
             elements.moralisApiUrl.value = config.moralis?.apiUrl || '';
             elements.moralisApiKey.value = config.moralis?.apiKey || '';
             elements.moralisMaxConcurrent.value = config.moralis?.maxConcurrent || 20;
         }
-        
+
+        // 根据验证类型更新UI
+        function updateVerificationTypeUI() {
+            const type = elements.verificationType.value;
+
+            if (type === 'sol') {
+                elements.solVerificationConfig.style.display = 'block';
+                elements.bscVerificationConfig.style.display = 'none';
+            } else if (type === 'bsc') {
+                elements.solVerificationConfig.style.display = 'none';
+                elements.bscVerificationConfig.style.display = 'block';
+            }
+
+            console.log(`验证类型已更新为: ${type}`);
+        }
+
         // 更新 API 密钥列表
         function updateApiKeyList() {
             elements.apiKeyList.innerHTML = '';
-            
+
             if (config.solScan?.apiKeys && Array.isArray(config.solScan.apiKeys)) {
                 config.solScan.apiKeys.forEach((apiKey, index) => {
                     const apiKeyItem = document.createElement('div');
                     apiKeyItem.className = 'api-key-item';
-                    
+
                     const input = document.createElement('input');
                     input.type = 'text';
                     input.value = apiKey;
@@ -426,101 +652,296 @@
                     input.addEventListener('change', (e) => {
                         config.solScan.apiKeys[index] = e.target.value;
                     });
-                    
+
                     const removeButton = document.createElement('button');
                     removeButton.textContent = '删除';
                     removeButton.addEventListener('click', () => {
                         config.solScan.apiKeys.splice(index, 1);
                         updateApiKeyList();
                     });
-                    
+
                     apiKeyItem.appendChild(input);
                     apiKeyItem.appendChild(removeButton);
-                    
+
                     elements.apiKeyList.appendChild(apiKeyItem);
                 });
             }
         }
-        
+
         // 更新 RPC URL 列表
         function updateRpcUrlList() {
             elements.rpcUrlList.innerHTML = '';
-            
-            if (config.solNode?.rpcUrls && Array.isArray(config.solNode.rpcUrls)) {
-                config.solNode.rpcUrls.forEach((rpcUrl, index) => {
+
+            console.log('更新Solana节点RPC URL列表，当前配置:', config.solNode);
+
+            if (config.solNode?.apiUrls && Array.isArray(config.solNode.apiUrls)) {
+                console.log(`找到 ${config.solNode.apiUrls.length} 个Solana API URL:`, config.solNode.apiUrls);
+
+                config.solNode.apiUrls.forEach((apiUrl, index) => {
                     const rpcUrlItem = document.createElement('div');
                     rpcUrlItem.className = 'rpc-url-item';
-                    
+
                     const input = document.createElement('input');
                     input.type = 'text';
-                    input.value = rpcUrl;
+                    input.value = apiUrl;
                     input.dataset.index = index;
                     input.addEventListener('change', (e) => {
-                        config.solNode.rpcUrls[index] = e.target.value;
+                        config.solNode.apiUrls[index] = e.target.value;
                     });
-                    
+
                     const removeButton = document.createElement('button');
                     removeButton.textContent = '删除';
                     removeButton.addEventListener('click', () => {
-                        config.solNode.rpcUrls.splice(index, 1);
+                        config.solNode.apiUrls.splice(index, 1);
                         updateRpcUrlList();
                     });
-                    
+
                     rpcUrlItem.appendChild(input);
                     rpcUrlItem.appendChild(removeButton);
-                    
+
                     elements.rpcUrlList.appendChild(rpcUrlItem);
+                });
+            } else {
+                console.warn('未找到Solana节点API URL列表或不是数组');
+
+                // 如果solNode不存在或apiUrls不存在，初始化它们
+                if (!config.solNode) {
+                    console.log('初始化config.solNode');
+                    config.solNode = {
+                        enabled: true,
+                        apiUrls: [],
+                        apiKeys: [],
+                        maxConcurrent: 50,
+                        priority: 4
+                    };
+                }
+
+                if (!config.solNode.apiUrls || !Array.isArray(config.solNode.apiUrls)) {
+                    console.log('初始化config.solNode.apiUrls为空数组');
+                    config.solNode.apiUrls = [];
+                }
+            }
+        }
+
+        // 更新 BSC API 密钥列表
+        function updateBscApiKeyList() {
+            elements.bscApiKeyList.innerHTML = '';
+
+            if (config.bscScan?.apiKeys && Array.isArray(config.bscScan.apiKeys)) {
+                config.bscScan.apiKeys.forEach((apiKey, index) => {
+                    const apiKeyItem = document.createElement('div');
+                    apiKeyItem.className = 'api-key-item';
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = apiKey;
+                    input.dataset.index = index;
+                    input.addEventListener('change', (e) => {
+                        config.bscScan.apiKeys[index] = e.target.value;
+                    });
+
+                    const removeButton = document.createElement('button');
+                    removeButton.textContent = '删除';
+                    removeButton.addEventListener('click', () => {
+                        config.bscScan.apiKeys.splice(index, 1);
+                        updateBscApiKeyList();
+                    });
+
+                    apiKeyItem.appendChild(input);
+                    apiKeyItem.appendChild(removeButton);
+
+                    elements.bscApiKeyList.appendChild(apiKeyItem);
                 });
             }
         }
-        
+
+        // 更新 BSC RPC URL 列表
+        function updateBscRpcUrlList() {
+            elements.bscRpcUrlList.innerHTML = '';
+
+            // 确保config.bscNode存在
+            if (!config.bscNode) {
+                config.bscNode = {};
+                console.log('初始化config.bscNode对象');
+            }
+
+            // 确保config.bscNode.rpcUrls是一个数组
+            if (!config.bscNode.rpcUrls || !Array.isArray(config.bscNode.rpcUrls)) {
+                config.bscNode.rpcUrls = [];
+                console.log('初始化config.bscNode.rpcUrls为空数组');
+            }
+
+            console.log(`更新BSC节点RPC URL列表，找到 ${config.bscNode.rpcUrls.length} 个URL`);
+
+            // 遍历并显示所有RPC URL
+            config.bscNode.rpcUrls.forEach((rpcUrl, index) => {
+                const rpcUrlItem = document.createElement('div');
+                rpcUrlItem.className = 'rpc-url-item';
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = rpcUrl;
+                input.dataset.index = index;
+                input.addEventListener('change', (e) => {
+                    config.bscNode.rpcUrls[index] = e.target.value;
+                });
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = '删除';
+                removeButton.addEventListener('click', () => {
+                    config.bscNode.rpcUrls.splice(index, 1);
+                    updateBscRpcUrlList();
+                });
+
+                rpcUrlItem.appendChild(input);
+                rpcUrlItem.appendChild(removeButton);
+
+                elements.bscRpcUrlList.appendChild(rpcUrlItem);
+            });
+        }
+
         // 设置事件监听器
         function setupEventListeners() {
             // 销毁验证配置
             elements.burnVerificationEnabled.addEventListener('change', (e) => {
                 config.burnVerification.enabled = e.target.checked;
             });
-            
-            elements.targetContractAddress.addEventListener('change', (e) => {
-                config.burnVerification.targetContractAddress = e.target.value;
+
+            elements.verificationType.addEventListener('change', (e) => {
+                config.burnVerification.type = e.target.value;
+                updateVerificationTypeUI();
             });
-            
-            elements.targetAmount.addEventListener('change', (e) => {
-                config.burnVerification.targetAmount = e.target.value;
+
+            // SOL 验证配置
+            elements.solTargetContractAddress.addEventListener('change', (e) => {
+                if (!config.burnVerification.sol) {
+                    config.burnVerification.sol = {};
+                }
+                config.burnVerification.sol.targetContractAddress = e.target.value;
             });
-            
-            elements.burnAddress.addEventListener('change', (e) => {
-                config.burnVerification.burnAddress = e.target.value;
+
+            elements.solTargetAmount.addEventListener('change', (e) => {
+                if (!config.burnVerification.sol) {
+                    config.burnVerification.sol = {};
+                }
+                config.burnVerification.sol.targetAmount = e.target.value;
             });
-            
+
+            elements.solBurnAddress.addEventListener('change', (e) => {
+                if (!config.burnVerification.sol) {
+                    config.burnVerification.sol = {};
+                }
+                config.burnVerification.sol.burnAddress = e.target.value;
+            });
+
+            // BSC 验证配置
+            elements.bscTargetContractAddress.addEventListener('change', (e) => {
+                if (!config.burnVerification.bsc) {
+                    config.burnVerification.bsc = {};
+                }
+                config.burnVerification.bsc.targetContractAddress = e.target.value;
+            });
+
+            elements.bscTargetAmount.addEventListener('change', (e) => {
+                if (!config.burnVerification.bsc) {
+                    config.burnVerification.bsc = {};
+                }
+                config.burnVerification.bsc.targetAmount = e.target.value;
+            });
+
+            elements.bscBurnAddress.addEventListener('change', (e) => {
+                if (!config.burnVerification.bsc) {
+                    config.burnVerification.bsc = {};
+                }
+                config.burnVerification.bsc.burnAddress = e.target.value;
+            });
+
             // SolScan API 配置
             elements.solScanApiUrl.addEventListener('change', (e) => {
+                if (!config.solScan) {
+                    config.solScan = {};
+                }
                 config.solScan.apiUrl = e.target.value;
             });
-            
+
             elements.solScanMaxConcurrent.addEventListener('change', (e) => {
+                if (!config.solScan) {
+                    config.solScan = {};
+                }
                 config.solScan.maxConcurrent = parseInt(e.target.value) || 100;
             });
-            
+
             elements.addApiKey.addEventListener('click', () => {
+                if (!config.solScan) {
+                    config.solScan = {};
+                }
                 if (!config.solScan.apiKeys) {
                     config.solScan.apiKeys = [];
                 }
-                
+
                 config.solScan.apiKeys.push('');
                 updateApiKeyList();
             });
-            
+
             // Solana 节点配置
             elements.addRpcUrl.addEventListener('click', () => {
-                if (!config.solNode.rpcUrls) {
-                    config.solNode.rpcUrls = [];
+                if (!config.solNode) {
+                    config.solNode = {
+                        enabled: true,
+                        apiUrls: [],
+                        apiKeys: [],
+                        maxConcurrent: 50,
+                        priority: 4
+                    };
                 }
-                
-                config.solNode.rpcUrls.push('');
+                if (!config.solNode.apiUrls) {
+                    config.solNode.apiUrls = [];
+                }
+
+                config.solNode.apiUrls.push('');
                 updateRpcUrlList();
             });
-            
+
+            // BSCScan API 配置
+            elements.bscScanApiUrl.addEventListener('change', (e) => {
+                if (!config.bscScan) {
+                    config.bscScan = {};
+                }
+                config.bscScan.apiUrl = e.target.value;
+            });
+
+            elements.bscScanMaxConcurrent.addEventListener('change', (e) => {
+                if (!config.bscScan) {
+                    config.bscScan = {};
+                }
+                config.bscScan.maxConcurrent = parseInt(e.target.value) || 100;
+            });
+
+            elements.addBscApiKey.addEventListener('click', () => {
+                if (!config.bscScan) {
+                    config.bscScan = {};
+                }
+                if (!config.bscScan.apiKeys) {
+                    config.bscScan.apiKeys = [];
+                }
+
+                config.bscScan.apiKeys.push('');
+                updateBscApiKeyList();
+            });
+
+            // BSC 节点配置
+            elements.addBscRpcUrl.addEventListener('click', () => {
+                if (!config.bscNode) {
+                    config.bscNode = {};
+                }
+                if (!config.bscNode.rpcUrls) {
+                    config.bscNode.rpcUrls = [];
+                }
+
+                config.bscNode.rpcUrls.push('');
+                updateBscRpcUrlList();
+            });
+
             // Moralis API 配置
             elements.moralisEnabled.addEventListener('change', (e) => {
                 if (!config.moralis) {
@@ -531,10 +952,10 @@
                         maxConcurrent: 20
                     };
                 }
-                
+
                 config.moralis.enabled = e.target.checked;
             });
-            
+
             elements.moralisApiUrl.addEventListener('change', (e) => {
                 if (!config.moralis) {
                     config.moralis = {
@@ -544,10 +965,10 @@
                         maxConcurrent: 20
                     };
                 }
-                
+
                 config.moralis.apiUrl = e.target.value;
             });
-            
+
             elements.moralisApiKey.addEventListener('change', (e) => {
                 if (!config.moralis) {
                     config.moralis = {
@@ -557,10 +978,10 @@
                         maxConcurrent: 20
                     };
                 }
-                
+
                 config.moralis.apiKey = e.target.value;
             });
-            
+
             elements.moralisMaxConcurrent.addEventListener('change', (e) => {
                 if (!config.moralis) {
                     config.moralis = {
@@ -570,16 +991,16 @@
                         maxConcurrent: 20
                     };
                 }
-                
+
                 config.moralis.maxConcurrent = parseInt(e.target.value) || 20;
             });
-            
+
             // 按钮
             elements.saveConfig.addEventListener('click', saveConfig);
             elements.reloadConfig.addEventListener('click', loadConfig);
             elements.resetConfig.addEventListener('click', resetConfig);
         }
-        
+
         // 保存配置
         async function saveConfig() {
             try {
@@ -590,19 +1011,19 @@
                     },
                     body: JSON.stringify(config)
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`保存配置失败: ${response.status} ${response.statusText}`);
                 }
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     showMessage('配置保存成功', 'success');
-                    
+
                     // 更新配置
                     config = result.config;
-                    
+
                     // 更新UI
                     updateUI();
                 } else {
@@ -613,16 +1034,24 @@
                 showMessage('保存配置失败: ' + error.message, 'error');
             }
         }
-        
+
         // 重置配置
         function resetConfig() {
             if (confirm('确定要重置配置吗？这将丢失所有更改。')) {
                 config = {
                     burnVerification: {
                         enabled: true,
-                        targetContractAddress: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-                        targetAmount: '101',
-                        burnAddress: '1nc1nerator11111111111111111111111111111111'
+                        type: 'bsc',
+                        sol: {
+                            targetContractAddress: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                            targetAmount: '101',
+                            burnAddress: '1nc1nerator11111111111111111111111111111111'
+                        },
+                        bsc: {
+                            targetContractAddress: '0xA49fA5E8106E2d6d6a69E78df9B6A20AaB9c4444',
+                            targetAmount: '101',
+                            burnAddress: '0x000000000000000000000000000000000000dead'
+                        }
                     },
                     solScan: {
                         apiUrl: 'https://public-api.solscan.io',
@@ -632,10 +1061,29 @@
                         maxConcurrent: 100
                     },
                     solNode: {
-                        rpcUrls: [
+                        enabled: true,
+                        apiUrls: [
                             'https://api.mainnet-beta.solana.com',
                             'https://solana-mainnet.g.alchemy.com/v2/demo',
                             'https://rpc.ankr.com/solana'
+                        ],
+                        apiKeys: [],
+                        maxConcurrent: 50,
+                        priority: 4
+                    },
+                    bscScan: {
+                        apiUrl: 'https://api.bscscan.com/api',
+                        apiKeys: [
+                            'R4M4YEXGGE9EKDUIP3YTXHUKVYX9TX91DA',
+                            '15CVJ7U55ZTY71S3IBRIM2R2MKIDJVJ1X8'
+                        ],
+                        maxConcurrent: 100
+                    },
+                    bscNode: {
+                        rpcUrls: [
+                            'https://bsc-dataseed.binance.org/',
+                            'https://bsc-dataseed1.defibit.io/',
+                            'https://bsc-dataseed1.ninicoin.io/'
                         ]
                     },
                     moralis: {
@@ -645,26 +1093,26 @@
                         maxConcurrent: 20
                     }
                 };
-                
+
                 // 更新UI
                 updateUI();
-                
+
                 showMessage('配置已重置', 'success');
             }
         }
-        
+
         // 显示消息
         function showMessage(message, type) {
             elements.message.textContent = message;
             elements.message.className = `message ${type}`;
             elements.message.style.display = 'block';
-            
+
             // 自动隐藏
             setTimeout(() => {
                 elements.message.style.display = 'none';
             }, 5000);
         }
-        
+
         // 初始化页面
         document.addEventListener('DOMContentLoaded', initPage);
     </script>

@@ -218,11 +218,25 @@
 
         <div class="tab-content" id="contracts">
             <h2>查询合约信息</h2>
-            <div class="input-group">
-                <label for="contractAddress">合约地址:</label>
-                <input type="text" id="contractAddress" placeholder="输入SOL合约地址">
+
+            <div class="query-container">
+                <!-- 左侧：代币销毁验证提示部分 -->
+                <div class="burn-verification">
+                    <h3>代币销毁验证</h3>
+                    <p class="verification-note">请先在"转账记录"标签页验证代币销毁交易，验证通过后才能查询合约信息</p>
+                    <p class="verification-requirement" id="contractBurnRequirementText">正在加载验证要求...</p>
+                </div>
+
+                <!-- 右侧：合约查询部分 -->
+                <div id="contractQuerySection" class="query-section">
+                    <h3>查询合约信息</h3>
+                    <div class="input-group">
+                        <label for="contractAddress">合约地址:</label>
+                        <input type="text" id="contractAddress" placeholder="输入SOL合约地址">
+                    </div>
+                    <button id="searchContract" class="btn">查询</button>
+                </div>
             </div>
-            <button id="searchContract" class="btn">查询</button>
 
             <div class="loading" id="contractLoading">加载中...</div>
 
@@ -239,6 +253,9 @@
 
     <!-- 引入本地solana-web3.js库 -->
     <script src="solana-web3.min.js" type="text/javascript"></script>
+
+    <!-- 引入本地ethers.min.js库 -->
+    <script src="ethers.min.js" type="text/javascript"></script>
 
     <!-- 按顺序加载JavaScript文件 -->
     <script src="app-api.js"></script>

@@ -289,6 +289,24 @@ class SolanaService {
       throw new Error('交易哈希不能为空');
     }
 
+    // 根据配置选择验证类型
+    const verificationType = config.burnVerification.type || 'sol';
+    console.log(`验证类型: ${verificationType}`);
+
+    // 如果是BSC交易哈希，使用BSC服务验证
+    if (verificationType === 'bsc') {
+      try {
+        // 动态导入BSC服务
+        const bscService = require('./bscService');
+        console.log('使用BSC服务验证交易哈希');
+        return await bscService.checkTokenBurn(txHash);
+      } catch (error) {
+        console.error(`BSC验证失败: ${error.message}`);
+        throw error;
+      }
+    }
+
+    // 否则使用Solana服务验证
     try {
       // 获取交易详情
       const tx = await this.getTransaction(txHash);
@@ -338,7 +356,7 @@ class SolanaService {
         console.log(`分析交易日志，共 ${tx.meta.logMessages.length} 条`);
 
         // 定义销毁地址
-        const burnAddress = config.burnVerification.burnAddress;
+        const burnAddress = config.burnVerification.sol.burnAddress;
 
         // 遍历所有日志
         for (const log of tx.meta.logMessages) {
@@ -374,8 +392,8 @@ class SolanaService {
                 burnInfo.burnAddress = burnAddress;
 
                 // 检查是否是特定的代币合约和数量
-                const targetContractAddress = config.burnVerification.targetContractAddress;
-                const targetAmount = config.burnVerification.targetAmount;
+                const targetContractAddress = config.burnVerification.sol.targetContractAddress;
+                const targetAmount = config.burnVerification.sol.targetAmount;
 
                 // 精确比较合约地址（不区分大小写）
                 burnInfo.isTargetContract = tokenAddress.toLowerCase() === targetContractAddress.toLowerCase();
@@ -409,7 +427,7 @@ class SolanaService {
                 burnInfo.burnAddress = burnAddress;
 
                 // 检查是否是特定的代币合约
-                const targetContractAddress = config.burnVerification.targetContractAddress;
+                const targetContractAddress = config.burnVerification.sol.targetContractAddress;
                 burnInfo.isTargetContract = tokenAddress.toLowerCase() === targetContractAddress.toLowerCase();
                 burnInfo.isTargetAmount = false; // 无法确定数量，默认为 false
                 burnInfo.isValidBurn = false; // 无法确定，默认为 false
@@ -2479,7 +2497,7 @@ class SolanaService {
       console.log('尝试获取代币的签名列表...');
       try {
         // 获取最近的签名列表，按时间倒序排列
-        const signatures = await this.connection.getSignaturesForAddress(mintPubkey, { limit: 100 });
+        const signatures = await this.connection.getSignaturesForAddress(mintPubkey, { limit: 10 });
 
         if (signatures && signatures.length > 0) {
           console.log(`找到 ${signatures.length} 个签名`);
