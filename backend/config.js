@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 module.exports = {
-  port: 3000,
+  port: 3001,
   sessionSecret: "sol-explorer-secret-key",
   // 分页配置
   pagination: {
