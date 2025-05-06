@@ -3,44 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const config = require('../config');
 
-// 从本地文件加载ethers
-let ethers;
-try {
-  // 尝试从node_modules加载
-  ethers = require('ethers');
-} catch (error) {
-  console.log('无法从node_modules加载ethers，尝试使用本地文件');
-
-  try {
-    // 如果从node_modules加载失败，尝试使用全局变量
-    // 注意：这种方式在Node.js环境中不会直接工作，因为没有window对象
-    // 这里只是为了兼容性，实际上我们会使用下面的方法
-    ethers = global.ethers;
-  } catch (error) {
-    console.error('无法加载ethers库，某些功能可能无法正常工作');
-    // 创建一个最小的替代对象，以避免代码中的错误
-    ethers = {
-      providers: {
-        JsonRpcProvider: class MockProvider {
-          constructor() {
-            console.error('使用模拟的JsonRpcProvider');
-          }
-        }
-      },
-      Contract: class MockContract {
-        constructor() {
-          console.error('使用模拟的Contract');
-        }
-      },
-      BigNumber: {
-        from: (value) => ({ toString: () => value.toString() })
-      },
-      utils: {
-        formatUnits: (value, decimals) => value.toString()
-      }
-    };
-  }
-}
+// 加载ethers库
+const ethers = require('ethers');
 
 class BSCService {
   constructor() {
@@ -54,34 +18,69 @@ class BSCService {
   // 初始化 BSC 提供者
   initProvider() {
     try {
-      this.provider = new ethers.providers.JsonRpcProvider(config.bscNode.rpcUrls[0]);
+      // 检查配置中是否有BSC节点配置
+      if (!config.bscNode || !config.bscNode.rpcUrls || !config.bscNode.rpcUrls.length) {
+        console.warn('BSC节点配置不存在或为空，使用默认RPC URL');
+        this.provider = new ethers.providers.JsonRpcProvider('https://bsc-dataseed1.binance.org');
+      } else {
+        this.provider = new ethers.providers.JsonRpcProvider(config.bscNode.rpcUrls[0]);
+      }
       console.log('BSC 提供者初始化成功');
     } catch (error) {
       console.error('BSC 提供者初始化失败:', error);
-      throw error;
+      // 使用备用RPC URL
+      try {
+        console.log('尝试使用备用RPC URL');
+        this.provider = new ethers.providers.JsonRpcProvider('https://bsc-dataseed1.binance.org');
+        console.log('使用备用RPC URL初始化成功');
+      } catch (backupError) {
+        console.error('备用RPC URL初始化也失败:', backupError);
+        throw error; // 抛出原始错误
+      }
     }
   }
 
   // 获取下一个 API 密钥
   getNextApiKey() {
+    // 检查配置中是否有BSCScan API密钥配置
+    if (!config.bscScan || !config.bscScan.apiKeys || !config.bscScan.apiKeys.length) {
+      console.warn('BSCScan API密钥配置不存在或为空');
+      return '';
+    }
+
     this.currentApiKeyIndex = (this.currentApiKeyIndex + 1) % config.bscScan.apiKeys.length;
     return config.bscScan.apiKeys[this.currentApiKeyIndex];
   }
 
   // 获取当前 API 密钥
   getCurrentApiKey() {
+    // 检查配置中是否有BSCScan API密钥配置
+    if (!config.bscScan || !config.bscScan.apiKeys || !config.bscScan.apiKeys.length) {
+      console.warn('BSCScan API密钥配置不存在或为空');
+      return '';
+    }
+
     return config.bscScan.apiKeys[this.currentApiKeyIndex];
   }
 
   // 调用 BSCScan API
   async callBscScanApi(module, action, params = {}) {
     try {
+      // 检查配置中是否有BSCScan API配置
+      if (!config.bscScan || !config.bscScan.apiUrl) {
+        throw new Error('BSCScan API配置不存在或为空');
+      }
+
       const apiKey = this.getCurrentApiKey();
 
       const url = new URL(config.bscScan.apiUrl);
       url.searchParams.append('module', module);
       url.searchParams.append('action', action);
-      url.searchParams.append('apikey', apiKey);
+
+      // 只有在API密钥不为空时才添加
+      if (apiKey) {
+        url.searchParams.append('apikey', apiKey);
+      }
 
       // 添加其他参数
       for (const [key, value] of Object.entries(params)) {
@@ -93,8 +92,13 @@ class BSCService {
       const response = await axios.get(url.toString());
 
       // 每次请求后立即轮换 API 密钥，以最大化利用多个 API Key
-      this.getNextApiKey();
-      console.log(`轮换到下一个 API 密钥: ${this.getCurrentApiKey().substring(0, 10)}...`);
+      if (apiKey) {
+        this.getNextApiKey();
+        const nextApiKey = this.getCurrentApiKey();
+        if (nextApiKey) {
+          console.log(`轮换到下一个 API 密钥: ${nextApiKey.substring(0, Math.min(10, nextApiKey.length))}...`);
+        }
+      }
 
       // 检查 API 响应状态
       if (response.data.status === '0') {
@@ -114,8 +118,11 @@ class BSCService {
       console.error(`调用 BSCScan API 失败 (${module}.${action}):`, error);
 
       // 在发生错误时轮换 API Key
-      console.log('发生错误，轮换到下一个 API 密钥');
-      this.getNextApiKey();
+      const apiKey = this.getCurrentApiKey();
+      if (apiKey) {
+        console.log('发生错误，轮换到下一个 API 密钥');
+        this.getNextApiKey();
+      }
 
       // 返回适当的默认值，而不是抛出错误
       if (module === 'contract') {

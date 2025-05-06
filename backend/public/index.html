@@ -254,8 +254,16 @@
     <!-- 引入本地solana-web3.js库 -->
     <script src="solana-web3.min.js" type="text/javascript"></script>
 
-    <!-- 引入本地ethers.min.js库 -->
-    <script src="ethers.min.js" type="text/javascript"></script>
+    <!-- 引入ethers.min.js库 (使用CDN版本) -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="text/javascript" crossorigin="anonymous"></script>
+    <!-- 备用本地版本 -->
+    <script>
+        // 如果CDN加载失败，尝试使用本地版本
+        if (typeof ethers === 'undefined') {
+            console.log('CDN版本加载失败，尝试使用本地版本');
+            document.write('<script src="ethers.min.js" type="text/javascript"><\/script>');
+        }
+    </script>
 
     <!-- 按顺序加载JavaScript文件 -->
     <script src="app-api.js"></script>
